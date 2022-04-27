@@ -1,0 +1,45 @@
+{{- $selectorLabels := include "app.selectorLabels" . -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-migrate"
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+spec:
+  template:
+    spec:
+      {{- if .Values.app.image.pullSecret }}
+      imagePullSecrets: {{ .Values.app.image.pullSecret }}
+      {{- end }}
+      serviceAccountName: {{ include "app.serviceAccountName" . }}
+      containers:
+        - name: "{{ .Release.Name }}-migrate"
+          image: {{ include "app.image" .Values.app.image }}
+          command: [ "dumb-init", "node", "server.js", "migrate" ]
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: "{{ .Release.Name }}-app-configmap"
+            - secretRef:
+                name: "{{ .Release.Name }}-app-secrets"
+            {{- with .Values.app.pods.extraEnvs }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      restartPolicy: OnFailure
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

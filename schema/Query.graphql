@@ -1,0 +1,18 @@
+type Query {
+    """
+    List topics
+
+    If not sorting is provided, topics are sorted by descending update date
+    """
+    topics(pagination: Pagination, sorting: TopicSorting): [Topic!]!
+
+    """
+    Fetch a topic by its ID
+    """
+    topic(id: ObjectID!): Topic
+
+    """
+    Fetch user document for the logged in user, returns null otherwise for anonymous
+    """
+    account: User
+}

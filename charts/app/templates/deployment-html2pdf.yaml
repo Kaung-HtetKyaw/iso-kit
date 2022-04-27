@@ -1,0 +1,69 @@
+{{- $selectorLabels := include "app.selectorLabels" . -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Release.Name }}-html2pdf"
+  namespace: {{ .Release.Namespace }}
+  labels:
+  {{- include "app.labels" . | nindent 4 }}
+spec:
+  replicas: {{ include "app.deploymentReplicas" .Values.html2pdf.podScaler }}
+  selector:
+    matchLabels:
+      {{- $selectorLabels | nindent 6 }}
+      app.kubernetes.io/component: html2pdf
+  template:
+    metadata:
+      labels:
+        {{- $selectorLabels | nindent 8 }}
+        app.kubernetes.io/component: html2pdf
+    spec:
+      {{- if .Values.html2pdf.image.pullSecret }}
+      imagePullSecrets: {{ .Values.html2pdf.image.pullSecret }}
+      {{- end }}
+      containers:
+        - name: html2pdf
+          image: {{ include "app.image" .Values.html2pdf.image }}
+          imagePullPolicy: {{ .Values.html2pdf.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              port: 3000
+              path: /.live
+              scheme: HTTP
+          livenessProbe:
+            httpGet:
+              port: 3000
+              path: /.live
+              scheme: HTTP
+          readinessProbe:
+            httpGet:
+              port: 3000
+              path: /.live
+              scheme: HTTP
+          {{- with .Values.html2pdf.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              {{- $selectorLabels | nindent 14 }}

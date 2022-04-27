@@ -1,0 +1,26 @@
+# build output
+/build
+/report.html
+
+# dependencies
+/node_modules
+
+# editors
+/.idea
+/.vscode
+
+# docker
+/docker-compose.override.yml
+
+# test reports & coverage reports
+/coverage
+/junit
+
+# env settings
+/.env*.local
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
