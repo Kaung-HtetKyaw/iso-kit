@@ -30,12 +30,13 @@ const prepareForGraphQL = (data: any): any => {
 };
 
 const createApolloClient = (
-    getContext: () => { i18n: I18n; token: string | undefined }
+    getContext: () => { i18n: I18n; token: string | undefined; getToken: () => string }
 ): ApolloClient<NormalizedCacheObject> => {
     // push the JWT token in headers
     const authLink = new ApolloLink((operation, forward) => {
         operation.setContext(({ headers }) => {
-            const { i18n, token } = getContext();
+            const { i18n, getToken } = getContext();
+            const token = getToken();
             const customHeaders = { ...headers, 'Accept-Language': i18n.language };
 
             if (token) {

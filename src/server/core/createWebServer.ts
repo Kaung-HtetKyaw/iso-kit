@@ -16,7 +16,7 @@ import createContext, { Context, RootDocument } from '../schema/context';
 import config from './config';
 import setupPrometheusMetrics, { ApolloMetricsPlugin } from './prometheus';
 import { expressRateLimiter } from './rateLimiter';
-import renderApplication from './renderApplication';
+import { renderAdminApplication, renderClientApplication } from './renderApplications';
 import { ApolloSentryPlugin } from './sentry';
 
 export type WebServerCreation = {
@@ -100,8 +100,14 @@ const createWebServer = async (): Promise<WebServerCreation> => {
             const host = req.header('X-Forwarded-Host');
             const scheme = req.header('X-Forwarded-Scheme') || 'https';
 
+            const origins = [`${scheme}://${host}`];
+
+            if (process.env.NODE_ENV === 'development') {
+                origins.push('https://studio.apollographql.com');
+            }
+
             // apply cors
-            callback(null, { origin: host ? `${scheme}://${host}` : false });
+            callback(null, { origin: host ? origins : false, credentials: true });
         })
     );
 
@@ -196,10 +202,10 @@ const createWebServer = async (): Promise<WebServerCreation> => {
         apolloServer.getMiddleware({ bodyParserConfig: { limit: '50mb' }, path: '/', cors: false })
     );
 
+    expressServer.get('/admin', renderAdminApplication);
+
     // fallback on the application for all other paths
-    expressServer.get('*', (req, res, next) => {
-        renderApplication(req, res, next);
-    });
+    expressServer.get('*', renderClientApplication);
 
     // sse the sentry error handler before any other error handler
     expressServer.use(Sentry.Handlers.errorHandler());

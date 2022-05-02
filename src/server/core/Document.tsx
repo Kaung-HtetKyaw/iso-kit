@@ -1,7 +1,7 @@
 import { ReactElement } from 'react';
 import { HelmetData } from 'react-helmet';
-import { RuntimeConfig } from '../../app/runtimeConfig';
 import { attachPublicPath } from '../utils';
+import { RuntimeConfig, AppState } from './renderApplications/core';
 
 type DocumentProps = {
     htmlAttrs?: { [prop: string]: any };
@@ -12,7 +12,9 @@ type DocumentProps = {
     jsScripts?: string[];
     cssScripts?: string[];
     runtime: RuntimeConfig;
+    preloadedState: AppState;
     locale: string;
+    publicPath?: string;
 };
 
 const Document = ({
@@ -25,6 +27,8 @@ const Document = ({
     jsScripts,
     runtime,
     locale,
+    publicPath,
+    preloadedState,
 }: DocumentProps) => (
     <html lang={locale} {...htmlAttrs}>
         <head>
@@ -32,8 +36,13 @@ const Document = ({
             {helmet.meta.toComponent()}
             {helmet.link.toComponent()}
             {cssScripts?.map((url, index) => (
-                // eslint-disable-next-line react/no-array-index-key
-                <link key={index.toString()} href={attachPublicPath(url)} rel="stylesheet" type="text/css" />
+                <link
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={index.toString()}
+                    href={attachPublicPath(url, publicPath)}
+                    rel="stylesheet"
+                    type="text/css"
+                />
             ))}
             {styleTags}
             <script
@@ -42,13 +51,19 @@ const Document = ({
                 data-role="runtime-config"
                 type="application/json"
             />
+            <script
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(preloadedState) }}
+                data-role="preloaded-state"
+                type="application/json"
+            />
         </head>
         <body {...bodyAttrs}>
             {/* eslint-disable-next-line react/no-danger */}
             <div dangerouslySetInnerHTML={{ __html: body }} id="root" />
             {jsScripts?.map((url, index) => (
                 // eslint-disable-next-line react/no-array-index-key
-                <script key={index.toString()} src={attachPublicPath(url)} type="application/javascript" />
+                <script key={index.toString()} src={attachPublicPath(url, publicPath)} type="application/javascript" />
             ))}
         </body>
     </html>

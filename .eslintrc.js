@@ -145,7 +145,7 @@ module.exports = {
         'react/react-in-jsx-scope': 'off',
 
         'import/no-extraneous-dependencies': [
-            'error',
+            'warn',
             { devDependencies: true, packageDir: path.join(__dirname, './') },
         ],
     },

@@ -46,7 +46,7 @@ const execute = async (req: Request, res: Response): Promise<void> => {
         // get the element
         const routerContext: StaticRouterContext = {};
         const appElement = sheet.collectStyles(
-            <StaticRouter context={routerContext} location={req.url}>
+            <StaticRouter basename="/" context={routerContext} location={req.url}>
                 <App createApolloClient={createApolloClient(graphqlContext)} i18n={i18n} runtime={runtime} />
             </StaticRouter>
         );
@@ -87,6 +87,7 @@ const execute = async (req: Request, res: Response): Promise<void> => {
                 helmet={helmet}
                 jsScripts={js}
                 locale={currentLocale}
+                publicPath={config.publicPath}
                 runtime={runtime}
                 styleTags={styleTags}
             />

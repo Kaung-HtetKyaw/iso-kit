@@ -38,10 +38,11 @@ const config = {
 
     port: getNumber(getPrefix('PORT'), 3000),
     publicPath: getString(getPrefix('PUBLIC_PATH'), '/public/'),
+    adminPublicPath: getString(getPrefix('ADMIN_PUBLIC_PATH'), '/public/admin/'),
 
     // secure cookies
     cookiePolicy: getString(getPrefix('COOKIE_POLICY'), 'strict'),
-    secureCookie: getBoolean(getPrefix('SECURE_COOKIE'), true),
+    secureCookie: getBoolean(getPrefix('SECURE_COOKIE'), false),
 
     // health checks
     healthChecks: {

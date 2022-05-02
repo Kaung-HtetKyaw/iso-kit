@@ -1,6 +1,7 @@
 {
     "welcome": "Welcome on this starter kit, beware of your clicks, the whole thing is experimental",
     "welcomeTitle": "Welcome",
+    "welcomeTitleAdmin": "Welcome Admin",
     "mainMenu": {
         "home": "Get Starter",
         "topics": "Topics"

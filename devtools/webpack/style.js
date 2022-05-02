@@ -27,7 +27,7 @@ const getStyleLoaders = cssOptions =>
         },
     ].filter(Boolean);
 
-const getLessLoaders = cssOptions => [
+const getLessLoaders = (cssOptions, overrideAntd = overrideFile) => [
     ...getStyleLoaders(cssOptions),
     {
         loader: require.resolve('resolve-url-loader'),
@@ -41,7 +41,7 @@ const getLessLoaders = cssOptions => [
             lessOptions: {
                 // required for ant design
                 javascriptEnabled: true,
-                modifyVars: lessToJS(fs.readFileSync(overrideFile, 'utf8'), {
+                modifyVars: lessToJS(fs.readFileSync(overrideAntd, 'utf8'), {
                     stripPrefix: true,
                     resolveVariables: true,
                 }),
@@ -51,7 +51,7 @@ const getLessLoaders = cssOptions => [
     },
 ];
 
-const getStyleRule = () => ({
+const getStyleRule = overrideAntd => ({
     test: /\.(less|css)$/,
     oneOf: [
         // "postcss" loader applies autoprefixer to our CSS.
@@ -90,7 +90,7 @@ const getStyleRule = () => ({
         {
             test: lessRegex,
             exclude: lessModuleRegex,
-            use: getLessLoaders({ importLoaders: 2 }),
+            use: getLessLoaders({ importLoaders: 2 }, overrideAntd),
             // Don't consider CSS imports dead code even if the
             // containing package claims to have no side effects.
             // Remove this when webpack adds a warning or an error for this.

@@ -14,12 +14,12 @@ export const isDuplicateErrorOnFields = (error: Error, ...fields: string[]) => {
     return xor(indexFields, fields).length === 0;
 };
 
-export const attachPublicPath = (url: string) => {
+export const attachPublicPath = (url: string, publicPath: string = config.publicPath) => {
     if (url.startsWith('auto')) {
         // webpack manifest link
-        return urlJoin(config.publicPath, url.replace('auto', ''));
+        return urlJoin(publicPath, url.replace('auto', ''));
     }
 
     // other links
-    return urlJoin(config.publicPath, url);
+    return urlJoin(publicPath, url);
 };

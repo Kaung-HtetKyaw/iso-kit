@@ -50,7 +50,7 @@ const serverConfig = {
         },
     },
 
-    externals: ['./manifest.json', nodeExternals()],
+    externals: ['./manifest.json', './admin-manifest.json', nodeExternals()],
 
     output: {
         path: path.resolve(rootDirname, 'build'),
@@ -206,4 +206,115 @@ const appConfig = {
     ].filter(Boolean),
 };
 
-module.exports = [serverConfig, appConfig];
+const adminConfig = {
+    name: 'admin',
+    mode: webpackMode,
+
+    target: `browserslist:${webpackMode}`,
+
+    entry: {
+        admin: [
+            isBuildIntentDevelopment && require.resolve('webpack-hot-middleware/client'),
+            require.resolve('antd/dist/antd.less'),
+            path.resolve(srcDirname, 'admin/global.less'),
+            path.resolve(srcDirname, 'admin/index.tsx'),
+        ].filter(Boolean),
+    },
+
+    resolve: {
+        extensions: ['.js', '.mjs', '.tsx', '.ts', '.jsx', '.json', '.wasm'],
+        mainFields: ['browser', 'module', 'main'],
+        alias: {
+            '@sentry/node': '@sentry/react',
+        },
+    },
+
+    output: {
+        publicPath: undefined,
+        path: path.resolve(rootDirname, 'build/public/admin'),
+        filename: isBuildIntentDevelopment ? 'static/chunks/[name].js' : 'static/chunks/[name]-[chunkhash].js',
+        chunkFilename: isBuildIntentDevelopment ? 'static/chunks/[name].js' : 'static/chunks/[name]-[chunkhash].js',
+        library: '_N_E',
+        libraryTarget: 'assign',
+        hotUpdateChunkFilename: 'static/webpack/[id].[fullhash].hot-update.js',
+        hotUpdateMainFilename: 'static/webpack/[fullhash].hot-update.json',
+    },
+
+    // do not show performance hints
+    performance: false,
+
+    bail: isBuildIntentProduction,
+    devtool: isBuildIntentProduction ? 'source-map' : 'cheap-module-source-map',
+
+    module: {
+        rules: [
+            getBabelRule(true),
+            getStyleRule(path.join(srcDirname, 'admin/antd.override.less')),
+            graphqlRule,
+        ].filter(Boolean),
+    },
+
+    plugins: [
+        new WebpackManifestPlugin({
+            fileName: path.join(rootDirname, 'build', 'admin-manifest.json'),
+            writeToFileEmit: true,
+            generate: (seed, files) =>
+                files.reduce((manifest, file) => {
+                    if (!file.isInitial) {
+                        return manifest;
+                    }
+
+                    let assetType = null;
+
+                    if (file.path.match(/\.js$/)) {
+                        assetType = 'js';
+                    } else if (file.path.match(/\.css$/)) {
+                        assetType = 'css';
+                    }
+
+                    if (!assetType) {
+                        return manifest;
+                    }
+
+                    if (!manifest[file.chunk.name]) {
+                        // eslint-disable-next-line no-param-reassign
+                        manifest[file.chunk.name] = { js: [], css: [] };
+                    }
+
+                    manifest[file.chunk.name][assetType].push(file.path);
+
+                    return manifest;
+                }, {}),
+        }),
+
+        new webpack.DefinePlugin({
+            'process.browser': JSON.stringify(true),
+            'process.isDev': JSON.stringify(isBuildIntentDevelopment),
+        }),
+
+        // hot reload with react refresh
+        isBuildIntentDevelopment && new webpack.HotModuleReplacementPlugin(),
+        isBuildIntentDevelopment &&
+            new ReactRefreshWebpackPlugin({
+                overlay: {
+                    sockIntegration: 'whm',
+                },
+            }),
+
+        new MiniCssExtractPlugin({
+            filename: 'static/css/[contenthash].css',
+            chunkFilename: 'static/css/[contenthash].css',
+        }),
+
+        isBuildIntentProduction &&
+            new BundleAnalyzerPlugin({
+                reportFilename: path.join(rootDirname, 'admin-report.html'),
+                analyzerMode: 'static',
+                openAnalyzer: false,
+            }),
+
+        isBuildIntentProduction && isInteractive && new WebpackBar({ name: 'admin', profile: true }),
+    ].filter(Boolean),
+};
+
+module.exports = [serverConfig, appConfig, adminConfig];
