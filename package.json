@@ -178,7 +178,7 @@
         "cookie": "^0.4.1",
         "cors": "^2.8.5",
         "dataloader": "^2.0.0",
-        "dayjs": "^1.10.6",
+        "dayjs": "^1.11.5",
         "enquirer": "^2.3.6",
         "express": "^4.17.1",
         "extract-files": "^11.0.0",
