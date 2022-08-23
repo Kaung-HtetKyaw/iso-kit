@@ -1,4 +1,4 @@
-# Starter-Kit
+# ISO-KIT
 
 The goal of this project is to provide a strong and efficient starter to quickly start developments on new projects. We welcome all feedback and
 contributions.
