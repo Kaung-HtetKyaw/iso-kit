@@ -39,6 +39,7 @@ const config = {
     port: getNumber(getPrefix('PORT'), 3000),
     publicPath: getString(getPrefix('PUBLIC_PATH'), '/public/'),
     adminPublicPath: getString(getPrefix('ADMIN_PUBLIC_PATH'), '/public/admin/'),
+    manifestFileName: getString(getPrefix('MANIFEST_FILE_NAME'), 'manifest'),
 
     // secure cookies
     cookiePolicy: getString(getPrefix('COOKIE_POLICY'), 'strict'),

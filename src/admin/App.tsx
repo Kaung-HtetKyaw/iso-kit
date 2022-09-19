@@ -1,7 +1,6 @@
 import { ChakraProvider } from '@chakra-ui/react';
 import { i18n as I18n } from 'i18next';
 import { I18nextProvider } from 'react-i18next';
-import { Provider } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
 import Bootstrap, { BootstrapProps } from './Bootstrap';
 import MainRouter from './MainRouter';

@@ -38,7 +38,7 @@ const createApolloClient = (
             const { i18n, getToken } = getContext();
             const token = getToken();
             const customHeaders = { ...headers, 'Accept-Language': i18n.language };
-   
+
             if (token) {
                 customHeaders.Authorization = `Bearer ${token}`;
             }

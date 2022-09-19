@@ -24,7 +24,7 @@ const BasicHeader = () => {
             dispatch(setAuthenticationToken(token));
             dispatch(setUser(user));
         });
-    }, []);
+    }, [authenticate, dispatch]);
 
     return (
         <Header>
