@@ -45,13 +45,9 @@ class MainRunner {
         // isolate the two compilers
         this.serverCompiler = this.compiler.compilers.find(instance => instance.name === 'server');
         this.appCompiler = this.compiler.compilers.find(instance => instance.name === 'app');
-        this.adminCompiler = this.compiler.compilers.find(instance => instance.name === 'admin');
 
         this.appCompilerPromise = null;
         this.appCompilerResolve = null;
-
-        this.adminCompilerPromise = null;
-        this.adminCompilerResolve = null;
 
         this.appCompiler.hooks.compile.tap('DevRunner', () => {
             this.appCompilerPromise = new Promise(resolve => {
@@ -61,16 +57,6 @@ class MainRunner {
 
         this.appCompiler.hooks.done.tap('DevRunner', () => {
             this.appCompilerResolve();
-        });
-
-        this.adminCompiler.hooks.compile.tap('DevRunner', () => {
-            this.adminCompilerPromise = new Promise(resolve => {
-                this.adminCompilerResolve = resolve;
-            });
-        });
-
-        this.adminCompiler.hooks.done.tap('DevRunner', () => {
-            this.adminCompilerResolve();
         });
 
         // port on which the app is running
@@ -93,7 +79,7 @@ class MainRunner {
 
         const isOutdated = () => activeRun !== this.latestRun;
 
-        await this.adminCompilerPromise;
+        // await this.adminCompilerPromise;
         await this.appCompilerPromise;
 
         if (isOutdated()) {
@@ -178,19 +164,6 @@ class MainRunner {
 
         // propagate hot reload
         app.use(hotMiddleware(this.appCompiler));
-
-        app.use(
-            // use the dev middleware to provide hot reload on the frontend
-            devMiddleware(this.adminCompiler, {
-                stats: 'errors-only',
-                serverSideRender: true,
-                writeToDisk: true,
-                publicPath: '/public/admin/',
-            })
-        );
-
-        // propagate hot reload
-        app.use(hotMiddleware(this.adminCompiler));
 
         app.use(async (req, res, next) => {
             try {

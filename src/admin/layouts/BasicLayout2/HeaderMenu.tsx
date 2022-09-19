@@ -1,5 +1,5 @@
 import { ChevronDownIcon } from '@chakra-ui/icons';
-import { Button, MenuButton, MenuList, Menu, Flex, MenuGroup, MenuItem } from '@chakra-ui/react';
+import { Button, MenuButton, MenuList, Menu, MenuGroup, MenuItem } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 

@@ -4,7 +4,6 @@ import { Component, ReactElement } from 'react';
 import { I18nContext } from 'react-i18next';
 import { getInitialState } from '../shared/reducer/persistState';
 import { AuthenticationInitialState } from './reducers/authentication';
-import store from './store/store';
 
 export type ContextGetter = () => { i18n: I18n; token: string | undefined };
 

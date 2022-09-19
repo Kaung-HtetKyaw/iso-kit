@@ -1,4 +1,4 @@
-import { List, Skeleton, Empty, Button } from 'antd';
+import { List, Empty, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useCreateTopicMutation, useGetTopicsQuery } from '../api';
 
@@ -15,7 +15,7 @@ const LatestTopics = () => {
 
     const noTopics = !data?.topics?.length;
 
-    const [createTopic, newTopic] = useCreateTopicMutation({ variables: { title: 'Dummy', body: 'Dummy' } });
+    const [createTopic] = useCreateTopicMutation({ variables: { title: 'Dummy', body: 'Dummy' } });
 
     if (!loading && noTopics) {
         return (

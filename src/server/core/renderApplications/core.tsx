@@ -31,8 +31,7 @@ export type StoreType = AdminStoreType | ClientStoreType;
 export type AppState = AdminAppState | ClientAppState;
 
 type AppOptions = {
-    publicPath: string;
-    manifest: { bundle: string; name: string };
+    appName: string;
     baseRoute: string;
     App: ComponentType<AppProps>;
     store: StoreType;
@@ -45,10 +44,10 @@ type AppOptions = {
 const execute = async (req: Request, res: Response, appOptions: AppOptions): Promise<void> => {
     const sheet = new ServerStyleSheet();
 
-    const { store, App, manifest, baseRoute, publicPath } = appOptions;
+    const { store, App, appName, baseRoute } = appOptions;
 
     try {
-        // todo detect the local from the browser at first
+        // TODO: detect the local from the browser at first
         const currentLocale = await getDefaultLocale();
 
         const runtime: RuntimeConfig = {
@@ -103,7 +102,7 @@ const execute = async (req: Request, res: Response, appOptions: AppOptions): Pro
 
         const helmet = Helmet.renderStatic();
         const styleTags = sheet.getStyleElement();
-        const { css, js } = getManifest(manifest);
+        const { css, js } = getManifest(appName);
 
         const document = (
             <Document
@@ -113,7 +112,7 @@ const execute = async (req: Request, res: Response, appOptions: AppOptions): Pro
                 jsScripts={js}
                 locale={currentLocale}
                 preloadedState={preloadedState}
-                publicPath={publicPath}
+                publicPath={config.publicPath}
                 runtime={runtime}
                 styleTags={styleTags}
             />

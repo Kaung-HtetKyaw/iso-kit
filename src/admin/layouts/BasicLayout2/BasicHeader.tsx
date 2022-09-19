@@ -1,5 +1,5 @@
 import { LockIcon } from '@chakra-ui/icons';
-import { Button, Flex } from '@chakra-ui/react';
+import { Button } from '@chakra-ui/react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import usePublic from '../../utilities/usePublic';
