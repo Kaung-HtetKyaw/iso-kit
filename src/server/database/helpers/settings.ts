@@ -76,7 +76,7 @@ export const getEncryptionKeyId = async () => {
     try {
         // then get the database and collections
         const regular = { client, db: client.db(config.db.name) };
-        const collections = getCollections({ regular, encrypted: regular });
+        const collections = getCollections({ regular });
 
         // get the setting we are looking for
         const setting = (await collections.settings.findOne({

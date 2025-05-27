@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import { getDatabaseContext, migrate } from '../database';
-import setupMasterKey from '../database/setupMasterKey';
 import { setup as startWorker } from '../queues';
 import config from './config';
 import createWebServer from './createWebServer';
@@ -94,14 +93,4 @@ export const composeCommand = (...shutdowns: (() => Promise<unknown>)[]) => {
 
     process.on('SIGTERM', onExit);
     process.on('SIGINT', onExit);
-};
-
-export const executeSetupMasterKey = async () => {
-    try {
-        await setupMasterKey();
-        process.exit(0);
-    } catch (error) {
-        console.error(error);
-        process.exit(1);
-    }
 };

@@ -6,7 +6,7 @@ import { isDuplicateErrorOnFields } from '../../../utils';
 import { InvalidInput } from '../../errors';
 import { GraphQLMutationResolvers } from '../definitions';
 
-const cryptPassword = async (password: string) => {
+export const cryptPassword = async (password: string) => {
     const salt = await genSalt(10);
 
     return hash(password, salt);

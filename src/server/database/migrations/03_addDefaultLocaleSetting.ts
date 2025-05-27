@@ -4,7 +4,7 @@ import { DatabaseContext } from '../instance';
 export default {
     identifier: '03_addDefaultLocaleSetting',
 
-    async up({ encrypted: { db } }: DatabaseContext): Promise<void> {
+    async up({ regular: { db } }: DatabaseContext): Promise<void> {
         // first ensure setting ID are unique
         await db.collection('settings').createIndex({ settingId: 1 }, { unique: true });
 

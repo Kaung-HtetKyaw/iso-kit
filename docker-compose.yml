@@ -18,11 +18,12 @@ services:
         environment:
             MINIO_ROOT_USER: 'AKIAIOSFODNN7EXAMPLE'
             MINIO_ROOT_PASSWORD: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY'
-        command: ["server", "/data", "--console-address", ":9001"]
+        command: ['server', '/data', '--console-address', ':9001']
         volumes:
             - minio:/data
 
     mongo:
+        container_name: iso-kit-mongo
         # can be replace by ghcr.io/appvantageasia/mongo-entreprise:X.X.X
         # changes to be done in override file
         image: mongo:5.0.6
@@ -31,8 +32,34 @@ services:
             MONGO_INITDB_ROOT_PASSWORD: password
         volumes:
             - mongo:/data/db
+        networks:
+            - mongo-compose-network
+
+    mongo-express:
+        image: mongo-express:latest
+        container_name: iso-kit-mongo-express
+        restart: always
+        environment:
+            ME_CONFIG_MONGODB_ADMINUSERNAME: root
+            ME_CONFIG_MONGODB_ADMINPASSWORD: password
+            ME_CONFIG_MONGODB_PORT: 27017
+            ME_CONFIG_MONGODB_SERVER: iso-kit-mongo
+            ME_CONFIG_BASICAUTH_USERNAME: root
+            ME_CONFIG_BASICAUTH_PASSWORD: password
+
+        ports:
+            - 8081:8081
+        links:
+            - mongo
+        depends_on:
+            - mongo
+        networks:
+            - mongo-compose-network
 
 volumes:
     mongo:
     redis:
     minio:
+networks:
+    mongo-compose-network:
+        driver: bridge

@@ -15,7 +15,7 @@ const BasicHeader = () => {
     const dispatch = useAppDispatch();
 
     const [authenticate] = useAuthenticateMutation({
-        variables: { username: 'kg', password: 'KG_Sama02749' },
+        variables: { username: 'admin', password: 'password' },
     });
 
     useEffect(() => {

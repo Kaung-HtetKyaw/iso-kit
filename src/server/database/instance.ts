@@ -1,12 +1,10 @@
 import { MongoClient, Db } from 'mongodb';
 import config from '../core/config';
-import { getRegularClient, getEncryptedClient } from './client';
+import { getRegularClient } from './client';
 import { Collections, getCollections } from './collections';
-import getKMS from './kms';
 
 export type DatabaseContext = {
     regular: { client: MongoClient; db: Db };
-    encrypted: { client: MongoClient; db: Db };
     collections: Collections;
 };
 
@@ -29,19 +27,13 @@ export const getDatabaseContext = async (): Promise<DatabaseContext> => {
     }
 
     if (!global.mongo.promise) {
-        const init = async (): Promise<Pick<DatabaseContext, 'regular' | 'encrypted'>> => {
+        const init = async (): Promise<Pick<DatabaseContext, 'regular'>> => {
             // get regular client first
             const regularClient = await getRegularClient();
             const regularDb = regularClient.db(config.db.name);
 
-            // get encrypted client
-            const kms = getKMS();
-            const encryptedClient = kms ? await getEncryptedClient(kms) : regularClient;
-            const encryptedDb = encryptedClient.db(config.db.name);
-
             return {
                 regular: { client: regularClient, db: regularDb },
-                encrypted: { client: encryptedClient, db: encryptedDb },
             };
         };
 

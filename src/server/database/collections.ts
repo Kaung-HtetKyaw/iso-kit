@@ -8,11 +8,8 @@ export type Collections = {
     settings: Collection<documents.Setting>;
 };
 
-export const getCollections = ({
-    regular,
-    encrypted,
-}: Pick<DatabaseContext, 'regular' | 'encrypted'>): Collections => ({
+export const getCollections = ({ regular }: Pick<DatabaseContext, 'regular'>): Collections => ({
     users: regular.db.collection<documents.User>('users'),
     topics: regular.db.collection<documents.Topic>('topics'),
-    settings: encrypted.db.collection<documents.Setting>('settings'),
+    settings: regular.db.collection<documents.Setting>('settings'),
 });
